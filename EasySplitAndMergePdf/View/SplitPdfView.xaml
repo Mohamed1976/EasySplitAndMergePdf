@@ -1,0 +1,431 @@
+﻿<UserControl x:Class="EasySplitAndMergePdf.View.SplitPdfView"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EasySplitAndMergePdf.View"
+             xmlns:converter="clr-namespace:EasySplitAndMergePdf.Converter"
+             xmlns:behavior="clr-namespace:EasySplitAndMergePdf.Behavior"
+             xmlns:control="clr-namespace:EasySplitAndMergePdf.Control" 
+             xmlns:root="clr-namespace:EasySplitAndMergePdf"
+             mc:Ignorable="d" 
+             d:DesignWidth="720"
+             d:DesignHeight="525">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Dictionary/ResourceLibrary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Background="{StaticResource DefaultBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Border Margin="{StaticResource DefaultBorderMargin}"
+                BorderBrush="{StaticResource DefaultBorderBrush}"
+                BorderThickness="{StaticResource DefaultBorderThickness}">
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Setter Property="IsEnabled" 
+                                Value="True"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsBusy}" 
+                                         Value="True">
+                                <Setter Property="IsEnabled" 
+                                        Value="False"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20*"></RowDefinition>
+                    <RowDefinition Height="35*"></RowDefinition>
+                    <RowDefinition Height="40*" ></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="40"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <DataGrid Name="mainSplitDataGrid"
+                              ToolTip="Drag &amp; drop one PDF file to split."
+                              Grid.Column="0"
+                              Margin="5,5,5,5"
+                              ItemsSource="{Binding PdfFiles, Mode=OneWay}" 
+                              SelectedItem="{Binding Path=SelectedFile, Mode=OneWay}"
+                              behavior:DoubleClickCommandBehavior.DoubleClickCommand="{Binding ShowFilePropertiesCmd}">
+                        <DataGrid.AllowDrop>
+                            <Binding Path="SelectedFile" Mode="OneWay">
+                                <Binding.Converter>
+                                    <converter:NullToBoolValueConverter></converter:NullToBoolValueConverter>
+                                </Binding.Converter>
+                            </Binding>
+                        </DataGrid.AllowDrop>
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem ToolTip="Add PDF file to split" 
+                                          InputGestureText="Ins"
+                                          Header="Add PDF file" 
+                                          Command="{Binding AddFileCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/Plus_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem ToolTip="Remove selected PDF file from list"
+                                          InputGestureText="Del"
+                                          Header="Remove selected PDF file" 
+                                          Command="{Binding RemoveFileCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/Minus_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator></Separator>
+                                <MenuItem ToolTip="Open PDF file in webbrowser" 
+                                          InputGestureText="Ctrl+O"
+                                          Header="Open PDF file" 
+                                          Command="{Binding OpenFileCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/Open_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem ToolTip="Show PDF file properties of selected file"
+                                          Header="Show PDF file properties"                                          
+                                          InputGestureText="Ctrl+P"
+                                          Command="{Binding ShowFilePropertiesCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/Property_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator></Separator>
+                                <MenuItem ToolTip="Unlock protected PDF using user or owner password" 
+                                          InputGestureText="Ctrl+U" 
+                                          Header="Unlock protected PDF file" 
+                                          Command="{Binding UnlockCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/Lock_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="40*" 
+                                                Header="Filename" 
+                                                Binding="{Binding Info.Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"></DataGridTextColumn>
+                            <DataGridTextColumn Width="70*"
+                                                Header="Path" 
+                                                Binding="{Binding Info.DirectoryName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"></DataGridTextColumn>
+                            <DataGridTextColumn Width="65" 
+                                                Header="Size">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="Info.Length" Mode="OneWay">
+                                        <Binding.Converter>
+                                            <converter:BytesSuffixConverter></converter:BytesSuffixConverter>
+                                        </Binding.Converter>    
+                                    </Binding>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Width="45" 
+                                                Header="Pages" 
+                                                Binding="{Binding Reader.NumberOfPages, Mode=OneWay}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTemplateColumn Width="40">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{x:Null}"
+                                                Focusable="False"
+                                                ToolTip="Unlock protected PDF using user or owner password [ Ctrl+U ]" 
+                                                Width="20" Height="20" 
+                                                Margin="2" 
+                                                Command="{Binding Path=DataContext.UnlockCmd, RelativeSource= {RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}">
+                                            <Image>
+                                                <Image.Style>
+                                                    <Style TargetType="{x:Type Image}">
+                                                        <Setter Property="Source" 
+                                                                Value="/Image/Tick_16x16.png" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsLocked}" 
+                                                                         Value="True">
+                                                                <Setter Property="Source" 
+                                                                        Value="/Image/Lock_16x16.png" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Image.Style>
+                                            </Image>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                        <i:Interaction.Behaviors>
+                            <behavior:DatagridScrollToViewBehaviors></behavior:DatagridScrollToViewBehaviors>
+                            <behavior:DropBehavior></behavior:DropBehavior>
+                        </i:Interaction.Behaviors>
+                        <DataGrid.InputBindings>
+                            <KeyBinding Command="{Binding RemoveFileCmd}" Key="Delete" />
+                            <KeyBinding Command="{Binding AddFileCmd}" Key="Insert"/>
+                            <KeyBinding Command="{Binding UnlockCmd}" Key="U" Modifiers="Control" />
+                            <KeyBinding Command="{Binding ShowFilePropertiesCmd}" Key="P" Modifiers="Control"/>
+                            <KeyBinding Command="{Binding OpenFileCmd}" Key="O" Modifiers="Control"/>
+                            <KeyBinding Command="{Binding ShowFilePropertiesCmd}" Key="Esc" Modifiers="Control"/>
+                            <KeyBinding Command="{Binding OpenFileCmd}" Key="O" Modifiers="Control"/>
+                            <KeyBinding Command="{Binding CancelSplitPdfCmd}" Key="Esc"/>
+                            <KeyBinding Command="{Binding SplitPdfCmd}" Key="Enter"/>
+                            <!-- Disable the default behavior. -->
+                            <KeyBinding  Modifiers="Ctrl" Key="Tab" Command="ApplicationCommands.NotACommand" />
+                            <KeyBinding  Modifiers="Ctrl+Shift" Key="Tab" Command="ApplicationCommands.NotACommand" />
+                        </DataGrid.InputBindings>
+                    </DataGrid>
+                    <StackPanel Margin="0,5,5,0" 
+                                Grid.Column="1">
+                        <Button Style="{x:Null}" 
+                                ToolTip="Select PDF file to split [ Ins ]" 
+                                Margin="0,0,0,2" 
+                                Command="{Binding AddFileCmd}">
+                            <Image Source="/Image/Plus_32x32.png"></Image>
+                        </Button>
+                        <Button Style="{x:Null}"
+                                ToolTip="Delete selected PDF file [ Del ]"  
+                                Margin="0,2,0,0" 
+                                Command="{Binding RemoveFileCmd}">
+                            <Image Source="/Image/Minus_32x32.png"></Image>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <GroupBox Grid.Row="1" 
+                          Margin="5,5,5,0" 
+                          BorderBrush="{StaticResource DefaultBorderBrush}" 
+                          BorderThickness="{StaticResource DefaultBorderThickness}">
+                    <GroupBox.Header>
+                        <TextBlock x:Name="txtblSearch"
+                                   Text="Split method"
+                                   TextWrapping="NoWrap"
+                                   Style="{DynamicResource GroupboxHeaderStyle}" />
+                    </GroupBox.Header>
+                    <StackPanel Margin="5">
+                        <StackPanel HorizontalAlignment="Left" 
+                                    VerticalAlignment="Center" 
+                                    Orientation="Horizontal">
+                            <RadioButton x:Name="rBtnInterval"
+                                         ToolTip="Split PDF document into files containing equal number of pages per file"
+                                         VerticalAlignment="Center" 
+                                         GroupName="SplitMethod"
+                                         Content="_Into files of:">
+                                <RadioButton.IsChecked>
+                                    <Binding Path="SplitMethod" Mode="TwoWay" 
+                                             UpdateSourceTrigger="PropertyChanged"
+                                             ConverterParameter="{x:Static root:DocSplitMethod.Interval}">
+                                        <Binding.Converter>
+                                            <converter:EnumToBoolConverter></converter:EnumToBoolConverter>
+                                        </Binding.Converter>
+                                    </Binding>
+                                </RadioButton.IsChecked>
+                            </RadioButton>
+                            <control:IntegerTextBox x:Name="txtInterval"
+                                                    MaxLength="4"
+                                                    ToolTip="Number of pages per file"
+                                                    HorizontalContentAlignment="Right" 
+                                                    VerticalAlignment="Center" 
+                                                    Margin="10,0,0,0" 
+                                                    Width="50"
+                                                    Height="22"
+                                                    IsEnabled="{Binding ElementName=rBtnInterval, Path=IsChecked}"
+                                                    Text="{Binding PageInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}">
+                            </control:IntegerTextBox>
+                            <Label VerticalAlignment="Center" 
+                                   Margin="10,0,0,0" 
+                                   Target="{Binding ElementName=txtInterval}" 
+                                   Content="_Pages"></Label>
+                        </StackPanel>
+                        <StackPanel  Orientation="Horizontal">
+                            <RadioButton x:Name="rBtnRange"
+                                         ToolTip="Split PDF document into files containing different ranges of pages per file"
+                                         GroupName="SplitMethod">
+                                <RadioButton.IsChecked>
+                                    <Binding Path="SplitMethod" 
+                                             Mode="TwoWay" 
+                                             UpdateSourceTrigger="PropertyChanged"
+                                             ConverterParameter="{x:Static root:DocSplitMethod.Range}">
+                                        <Binding.Converter>
+                                            <converter:EnumToBoolConverter></converter:EnumToBoolConverter>
+                                        </Binding.Converter>
+                                    </Binding>
+                                </RadioButton.IsChecked>
+                                <StackPanel>
+                                    <AccessText Text="By page _range"></AccessText>
+                                    <Label Content="_Page range separated by comma, semicolon to separate output files"
+                                           Target="{Binding ElementName=txtRange}"></Label>
+                                </StackPanel>
+                            </RadioButton>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Name="txtRange"
+                                     ToolTip="Different page ranges, where each range is separated by ';'"
+                                     Width="200"
+                                     Height="22"
+                                     Margin="18,5,10,0" 
+                                     HorizontalAlignment="Left" 
+                                     IsEnabled="{Binding ElementName=rBtnRange, Path=IsChecked}"
+                                     Text="{Binding PageRange, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}">
+                            </TextBox>
+                            <Label Target="{Binding ElementName=txtRange}" 
+                                   VerticalContentAlignment="Bottom"
+                                   VerticalAlignment="Bottom"
+                                   Content="(Example: 1-4;5,6,8;12;17-19)"></Label>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Grid.Row="2" 
+                          Margin="5,5,5,5"  
+                          BorderBrush="{StaticResource DefaultBorderBrush}" 
+                          BorderThickness="{StaticResource DefaultBorderThickness}">
+                    <GroupBox.Header>
+                        <TextBlock Text="Destination folder and filename settings"
+                                   TextWrapping="NoWrap"
+                                   Style="{DynamicResource GroupboxHeaderStyle}" />
+                    </GroupBox.Header>
+                    <StackPanel Margin="5">
+                        <StackPanel HorizontalAlignment="Left" 
+                                    VerticalAlignment="Center" 
+                                    Orientation="Horizontal">
+                            <Label VerticalAlignment="Center" 
+                                   Content="_Export file name" 
+                                   Target="{Binding ElementName=baseFileName}"></Label>
+                            <TextBox x:Name="baseFileName"
+                                     ToolTip="Resulting PDF files are created with this name followed by index digit"
+                                     VerticalAlignment="Center" 
+                                     Margin="10,0,0,0"
+                                     Height="22"
+                                     Width="200">
+                                <TextBox.Text>
+                                    <Binding Path="BaseFileName" 
+                                             Mode="TwoWay" 
+                                             UpdateSourceTrigger="PropertyChanged" 
+                                             ValidatesOnNotifyDataErrors="True"></Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </StackPanel>
+                        <Label VerticalAlignment="Center" Content="Select destination folder:"></Label>
+                        <RadioButton ToolTip="Resulting PDF files will be saved in the source directory"
+                                     Margin="20,0,0,2.5" 
+                                     VerticalAlignment="Center"
+                                     Content="_Use source folder" 
+                                     GroupName="destination">
+                            <RadioButton.IsChecked>
+                                <Binding Path="SaveType" 
+                                         Mode="TwoWay" 
+                                         UpdateSourceTrigger="PropertyChanged"
+                                         ConverterParameter="{x:Static root:SaveOptions.UseSourceFolder}">
+                                    <Binding.Converter>
+                                        <converter:EnumToBoolConverter></converter:EnumToBoolConverter>
+                                    </Binding.Converter>
+                                </Binding>
+                            </RadioButton.IsChecked>
+                        </RadioButton>
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
+                            <RadioButton x:Name="rBtnSelectFolder"
+                                         ToolTip="Resulting PDF files will be saved in the specified directory"
+                                         Margin="20,2.5,0,0" 
+                                         VerticalAlignment="Center" 
+                                         Content="_Select New folder" GroupName="destination">
+                                <RadioButton.IsChecked>
+                                    <Binding Path="SaveType" 
+                                         Mode="TwoWay" 
+                                         UpdateSourceTrigger="PropertyChanged"
+                                         ConverterParameter="{x:Static root:SaveOptions.UseCustomFolder}">
+                                        <Binding.Converter>
+                                            <converter:EnumToBoolConverter></converter:EnumToBoolConverter>
+                                        </Binding.Converter>
+                                    </Binding>
+                                </RadioButton.IsChecked>
+                            </RadioButton>
+                            <TextBox ToolTip="Directory used to save the resulting PDF files"
+                                     IsEnabled="{Binding ElementName=rBtnSelectFolder, Path=IsChecked}"
+                                     VerticalAlignment="Center" 
+                                     Margin="10,0,0,0" 
+                                     Width="200" 
+                                     Height="22"
+                                     Text="{Binding DestinationFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"></TextBox>
+                            <Button ToolTip="Select directory where the resulting PDF files are saved" 
+                                    IsEnabled="{Binding ElementName=rBtnSelectFolder, Path=IsChecked}"
+                                    VerticalAlignment="Center" 
+                                    Margin="10,0,0,0"
+                                    Command="{Binding SelectFolderCmd}">
+                                <StackPanel HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Orientation="Horizontal">
+                                    <Image Width="16" 
+                                           Height="16" 
+                                           Source="/Image/open_16x16.png"/>
+                                    <AccessText Margin="5,0,0,0" 
+                                                VerticalAlignment="Center" 
+                                                TextWrapping="NoWrap" 
+                                                Text="_Browse..."></AccessText>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <CheckBox ToolTip="Overwrite resulting PDF files if they exist in location"
+                                  IsChecked="{Binding OverwriteFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                  Margin="0,5,0,0" Content="_Overwrite file(s) if exists"></CheckBox>
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+        </Border>
+        <StackPanel Grid.Row="3" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Center">
+            <Button ToolTip="Start PDF split process"
+                    VerticalAlignment="Center" 
+                    Command="{Binding SplitPdfCmd}"
+                    Margin="0,0,2,0"
+                    IsDefault="True">
+                <StackPanel HorizontalAlignment="Center" 
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                    <Image  Width="16"
+                            Height="16"
+                            Source="/Image/Tick_16x16.png"/>
+                    <TextBlock Margin="5,0,0,0"
+                               VerticalAlignment="Center"
+                               TextWrapping="NoWrap"
+                               Text="Split">
+                    </TextBlock>
+                </StackPanel>
+            </Button>
+            <Button ToolTip="Cancel PDF split process"
+                    Margin="2,0,5,0"
+                    VerticalAlignment="Center"
+                    Command="{Binding CancelSplitPdfCmd}"
+                    IsCancel="True">
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                    <Image  Width="16" 
+                            Height="16"
+                            Source="/Image/Cancel_16x16.png"/>
+                    <TextBlock Margin="5,0,0,0"
+                               VerticalAlignment="Center"
+                               TextWrapping="NoWrap"
+                               Text="Cancel">
+                    </TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

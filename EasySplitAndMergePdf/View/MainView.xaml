@@ -1,0 +1,94 @@
+﻿<Window x:Class="EasySplitAndMergePdf.View.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EasySplitAndMergePdf.View"
+        xmlns:vm="clr-namespace:EasySplitAndMergePdf.ViewModel"        
+        mc:Ignorable="d"
+        Icon="/Image/PdfViewHeader_8x7.ico"
+        Title="Easy Split &amp; Merge PDF"
+        Height="600"
+        Width="700"
+        Background="LightGray"
+        FocusManager.FocusedElement="{Binding ElementName=mainTabControl}"
+        ResizeMode="CanResizeWithGrip">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Dictionary/ResourceLibrary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel LastChildFill="True">
+        <Border Height="70"
+                Background="{StaticResource DefaultHeaderBrush}"
+                BorderBrush="Black"
+                BorderThickness="0,1,0,0"
+                DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal">
+                <Image Margin="10,0,0,0" 
+                       Height="60" 
+                       VerticalAlignment="Center"                        
+                       Source="/Image/PdfViewHeader.png"></Image>
+                <TextBlock FontSize="48" 
+                           Foreground="White" 
+                           Text="Easy Split &amp; Merge" 
+                           VerticalAlignment="Center" 
+                           Margin="10,0,0,0"></TextBlock>
+                <TextBlock FontSize="48" 
+                           FontWeight="Bold" 
+                           Foreground="Red" 
+                           Text="PDF" 
+                           Margin="10,0,0,0" 
+                           VerticalAlignment="Center"></TextBlock>
+            </StackPanel>
+        </Border>
+        <StatusBar DockPanel.Dock="Bottom" 
+                   VerticalAlignment="Bottom" 
+                   Background="LightGray">
+            <StatusBarItem Visibility="{Binding Path=SelectedTab.StatusBarIsVisible}">
+                <Grid>
+                    <ProgressBar x:Name="pbStatus"
+                                 Width="100" 
+                                 Height="20"                                 
+                                 Value="{Binding Path=SelectedTab.ProgressBarValue, Mode=OneWay}"
+                                 IsIndeterminate="{Binding Path=SelectedTab.ProgressBarIsIndeterminate, Mode=OneWay}"/>
+                    <TextBlock Text="{Binding ElementName=pbStatus, Path=Value, StringFormat={}{0:0}%}" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center"></TextBlock>
+                </Grid>
+            </StatusBarItem>
+            <Separator Visibility="{Binding Path=SelectedTab.StatusBarIsVisible}"></Separator>
+            <StatusBarItem Visibility="{Binding Path=SelectedTab.StatusBarIsVisible}">
+                <Label Content="{Binding Path=SelectedTab.ProgressStatus}" 
+                       HorizontalContentAlignment="Left" 
+                       VerticalAlignment="Bottom" 
+                       MinWidth="200" 
+                       Height="26"></Label>
+            </StatusBarItem>
+        </StatusBar>
+        <TabControl x:Name="mainTabControl" 
+                    Background="LightGray"
+                    Validation.ErrorTemplate="{x:Null}"
+                    ItemsSource="{Binding TabControls, Mode=OneWay}"
+                    SelectedItem="{Binding SelectedTab, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <TabControl.Resources>
+                <DataTemplate DataType="{x:Type vm:SplitPdfViewModel}">
+                    <local:SplitPdfView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:MergePdfViewModel}">
+                    <local:MergePdfView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AboutViewModel}">
+                    <local:AboutView />
+                </DataTemplate>
+            </TabControl.Resources>
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="{x:Type TabItem}" >
+                    <Setter Property="Header" Value="{Binding Header}"></Setter>
+                </Style>
+            </TabControl.ItemContainerStyle>
+        </TabControl>
+    </DockPanel>
+</Window>

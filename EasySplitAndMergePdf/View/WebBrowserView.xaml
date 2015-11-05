@@ -1,0 +1,42 @@
+﻿<Window x:Class="EasySplitAndMergePdf.View.WebBrowserView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"        
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EasySplitAndMergePdf.View"
+        xmlns:b="clr-namespace:EasySplitAndMergePdf.Behavior"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        mc:Ignorable="d"
+        ShowInTaskbar="False"
+        Background="LightGray"
+        FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}"
+        Icon="/Image/PdfViewHeader_8x7.ico"
+        Title="Easy Split &amp; Merge PDF" 
+        Height="600" Width="600">
+    <DockPanel LastChildFill="True">
+        <StatusBar DockPanel.Dock="Bottom" 
+                   VerticalAlignment="Bottom" 
+                   Background="LightGray">
+            <StatusBarItem>
+                <Label Content="{Binding FileName, Mode=OneTime}" 
+                       HorizontalContentAlignment="Left" 
+                       VerticalAlignment="Bottom" 
+                       Height="26"></Label>
+            </StatusBarItem>
+        </StatusBar>
+        <WebBrowser x:Name="mainWebBrowser" 
+                    b:BrowserNavigateBehavior.NavigateTo="{Binding Path=BrowserUri, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+        </WebBrowser>
+    </DockPanel>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CleanUpCmd}" 
+                                   CommandParameter="{Binding ElementName=mainWebBrowser}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Window.InputBindings>
+        <KeyBinding Key="Esc"
+                    Command="{Binding CloseCmd}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"></KeyBinding>
+    </Window.InputBindings>
+</Window>

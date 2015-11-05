@@ -1,0 +1,130 @@
+﻿<Window x:Class="EasySplitAndMergePdf.View.FilePropertiesView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EasySplitAndMergePdf.View"
+        mc:Ignorable="d"
+        ShowInTaskbar="False"
+        Background="LightGray"
+        FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}"
+        Icon="/Image/PdfViewHeader_8x7.ico"
+        Title="Easy Split &amp; Merge PDF" 
+        Height="700" Width="650">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Dictionary/ResourceLibrary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel LastChildFill="True">
+        <StatusBar DockPanel.Dock="Bottom" 
+                   VerticalAlignment="Bottom" 
+                   Background="{StaticResource DefaultBackgroundBrush}">
+            <StatusBarItem>
+                <Label Content="{Binding FileName}" 
+                       HorizontalContentAlignment="Left" 
+                       VerticalAlignment="Bottom" 
+                       Height="26"></Label>
+            </StatusBarItem>
+        </StatusBar>
+        <Grid Background="{StaticResource DefaultBackgroundBrush}" x:Name="mainGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Margin="{StaticResource DefaultBorderMargin}"
+                    BorderBrush="{StaticResource DefaultBorderBrush}"
+                    BorderThickness="{StaticResource DefaultBorderThickness}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" 
+                              Margin="5,10,5,2" 
+                              BorderBrush="{StaticResource DefaultBorderBrush}" 
+                              BorderThickness="{StaticResource DefaultBorderThickness}">
+                        <GroupBox.Header>
+                            <TextBlock Text="File properties"
+                                        TextWrapping="NoWrap"
+                                        Style="{DynamicResource GroupboxHeaderStyle}" />
+                        </GroupBox.Header>
+                        <DataGrid HeadersVisibility="None"                                  
+                                  ItemsSource="{Binding Properties, Mode=OneTime}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Key}" Width="3*"></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Value}" Width="7*"></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <GridSplitter Grid.Row="1" 
+                                  Height="5" 
+                                  Width="Auto"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  ResizeBehavior="PreviousAndNext"
+                                  ResizeDirection="Rows"></GridSplitter>
+                    <GroupBox Grid.Row="2" 
+                              Margin="5,10,5,2" 
+                              BorderBrush="{StaticResource DefaultBorderBrush}" 
+                              BorderThickness="{StaticResource DefaultBorderThickness}">
+                        <GroupBox.Header>
+                            <TextBlock Text="PDF properties"
+                                       TextWrapping="NoWrap"
+                                       Style="{DynamicResource GroupboxHeaderStyle}" />
+                        </GroupBox.Header>
+                        <DataGrid HeadersVisibility="None" 
+                                  ItemsSource="{Binding Info, Mode=OneTime}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Key}" Width="3*"></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Value}" Width="7*"></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <GridSplitter Grid.Row="3"
+                                  Height="5" 
+                                  Width="Auto"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  ResizeBehavior="PreviousAndNext"
+                                  ResizeDirection="Rows"></GridSplitter>
+                    <GroupBox Grid.Row="4" 
+                              Margin="5,10,5,2" 
+                              BorderBrush="{StaticResource DefaultBorderBrush}" 
+                              BorderThickness="{StaticResource DefaultBorderThickness}">
+                        <GroupBox.Header>
+                            <TextBlock Text="Security"
+                                       TextWrapping="NoWrap"
+                                       Style="{DynamicResource GroupboxHeaderStyle}" />
+                        </GroupBox.Header>
+                        <DataGrid HeadersVisibility="None" 
+                                  ItemsSource="{Binding Security}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Key}" Width="2*"></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Value}" Width="8*"></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <GridSplitter Grid.Row="5"
+                                  Height="5" 
+                                  Width="Auto"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  ResizeBehavior="PreviousAndNext"
+                                  ResizeDirection="Rows"></GridSplitter>
+                </Grid>
+            </Border>
+        </Grid>
+    </DockPanel>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" 
+                    Command="{Binding CloseWindowCmd}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"/>
+    </Window.InputBindings>
+</Window>

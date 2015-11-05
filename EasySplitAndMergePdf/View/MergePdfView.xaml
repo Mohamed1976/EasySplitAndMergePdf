@@ -1,0 +1,334 @@
+﻿<UserControl x:Class="EasySplitAndMergePdf.View.MergePdfView"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converter="clr-namespace:EasySplitAndMergePdf.Converter"
+             xmlns:behavior="clr-namespace:EasySplitAndMergePdf.Behavior"
+             xmlns:root="clr-namespace:EasySplitAndMergePdf"
+             xmlns:local="clr-namespace:EasySplitAndMergePdf.View"
+             mc:Ignorable="d" 
+             d:DesignWidth="720"
+             d:DesignHeight="525">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Dictionary/ResourceLibrary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Background="{StaticResource DefaultBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Border Margin="{StaticResource DefaultBorderMargin}"
+                BorderBrush="{StaticResource DefaultBorderBrush}"
+                BorderThickness="{StaticResource DefaultBorderThickness}">
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Setter Property="IsEnabled" Value="True"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60*"></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                    <RowDefinition Height="40*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="40"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <DataGrid Name="mainMergeDataGrid"
+                              Margin="5"
+                              AllowDrop="True"
+                              Grid.Column="0"
+                              ToolTip="Drag &amp; drop multiple PDF files to merge."
+                              ItemsSource="{Binding PdfFiles, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                              SelectedItem="{Binding SelectedFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              behavior:DoubleClickCommandBehavior.DoubleClickCommand="{Binding ShowFilePropertiesCmd}"
+                              behavior:DisplayRowNumberBehavior.DisplayRowNumberOffset="1"
+                              behavior:DisplayRowNumberBehavior.DisplayRowNumber="True">
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem ToolTip="Add PDF files to merge"
+                                          InputGestureText="Ins"
+                                          Header="Add PDF files" 
+                                          Command="{Binding AddFileCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/Plus_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem ToolTip="Remove selected PDF file from list"
+                                          InputGestureText="Del"
+                                          Header="Remove selected PDF file" Command="{Binding RemoveFileCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/Minus_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator></Separator>
+                                <MenuItem ToolTip="Open PDF file in webbrowser" 
+                                          InputGestureText="Ctrl+O" 
+                                          Header="Open PDF file" 
+                                          Command="{Binding OpenFileCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/Open_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem ToolTip="Show PDF file properties of selected file"
+                                          InputGestureText="Ctrl+P"
+                                          Header="Show PDF file properties" 
+                                          Command="{Binding ShowFilePropertiesCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/Property_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator></Separator>
+                                <MenuItem ToolTip="Move selected PDF file up in list"
+                                          InputGestureText="Ctrl+Up"                                          
+                                          Header="Move PDF file up" Command="{Binding MoveUpCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/ArrowUp_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem ToolTip="Move selected PDF file down in list"
+                                          InputGestureText="Ctrl+Down"
+                                          Header="Move PDF file down" Command="{Binding MoveDownCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/ArrowDown_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator></Separator>
+                                <MenuItem ToolTip="Unlock protected PDF using user or owner password" 
+                                          InputGestureText="Ctrl+U" 
+                                          Header="Unlock protected PDF file" 
+                                          Command="{Binding UnlockCmd}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Image/Lock_16x16.png"></Image>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="40*" Header="Filename" Binding="{Binding Info.Name, Mode=OneWay}"></DataGridTextColumn>
+                            <DataGridTextColumn Width="70*" Header="Path" Binding="{Binding Info.DirectoryName, Mode=OneWay}"></DataGridTextColumn>
+                            <DataGridTextColumn Width="65" Header="Size">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="Info.Length" Mode="OneWay">
+                                        <Binding.Converter>
+                                            <converter:BytesSuffixConverter></converter:BytesSuffixConverter>
+                                        </Binding.Converter>
+                                    </Binding>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Width="45" 
+                                                Header="Pages" 
+                                                Binding="{Binding Reader.NumberOfPages, Mode=OneWay}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTemplateColumn Width="40">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{x:Null}"
+                                                Focusable="False"
+                                                ToolTip="Unlock protected PDF using user or owner password [ Ctrl+U ]"
+                                                Width="20" Height="20" Margin="2" Command="{Binding Path=DataContext.UnlockCmd, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}">
+                                            <Image>
+                                                <Image.Style>
+                                                    <Style TargetType="{x:Type Image}">
+                                                        <Setter Property="Source" Value="/Image/Tick_16x16.png" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsLocked}" Value="True">
+                                                                <Setter Property="Source" Value="/Image/Lock_16x16.png" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Image.Style>
+                                            </Image>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                        <i:Interaction.Behaviors>
+                            <behavior:DatagridScrollToViewBehaviors></behavior:DatagridScrollToViewBehaviors>
+                            <behavior:DropBehavior AllowMultipleFiles="True"></behavior:DropBehavior>
+                        </i:Interaction.Behaviors>
+                        <DataGrid.InputBindings>
+                            <KeyBinding Command="{Binding AddFileCmd}" Key="Insert"/>
+                            <KeyBinding Command="{Binding RemoveFileCmd}" Key="Delete" />
+                            <KeyBinding Command="{Binding UnlockCmd}" Key="U" Modifiers="Control" />
+                            <KeyBinding Command="{Binding ShowFilePropertiesCmd}" Key="P" Modifiers="Control"/>
+                            <KeyBinding Command="{Binding OpenFileCmd}" Key="O" Modifiers="Control"/>
+                            <KeyBinding Command="{Binding MoveUpCmd}" Modifiers="Ctrl" Key="Up" />
+                            <KeyBinding Command="{Binding MoveDownCmd}" Modifiers="Ctrl" Key="Down" />
+                            <KeyBinding Command="{Binding ScrollUpCmd}" Key="Up"/>
+                            <KeyBinding Command="{Binding ScrollDownCmd}" Key="Down"/>
+                            <KeyBinding Command="{Binding CancelMergeCmd}" Key="Esc"/>
+                            <KeyBinding Command="{Binding MergeCmd}" Key="Enter"/>
+                            <!-- Disable the default behavior. -->
+                            <KeyBinding  Modifiers="Ctrl" Key="Tab" Command="ApplicationCommands.NotACommand" />
+                            <KeyBinding  Modifiers="Ctrl+Shift" Key="Tab" Command="ApplicationCommands.NotACommand" />
+                        </DataGrid.InputBindings>
+                    </DataGrid>
+                    <StackPanel Margin="0,5,5,0" Grid.Column="1">
+                        <Button Name="btnAddFiles"
+                                ToolTip="Select PDF files to merge [ Ins ]."
+                                Style="{x:Null}" 
+                                Margin="0,0,0,2" 
+                                Command="{Binding AddFileCmd}">
+                            <Image Source="/Image/Plus_32x32.png"></Image>
+                        </Button>
+                        <Button ToolTip="Delete selected PDF file [ Del ]."
+                                Style="{x:Null}" 
+                                Margin="0,2,0,2" 
+                                Command="{Binding RemoveFileCmd}">
+                            <Image Source="/Image/Minus_32x32.png"></Image>
+                        </Button>
+                        <Button ToolTip="Move selected file up in list [ Ctrl+Up ]."
+                                Style="{x:Null}" 
+                                Margin="0,2,0,2" 
+                                Command="{Binding MoveUpCmd}">
+                            <Image Source="/Image/ArrowUp_32x32.png"></Image>
+                        </Button>
+                        <Button ToolTip="Move selected file down in list [ Ctrl+Down ]." 
+                                Style="{x:Null}" 
+                                Margin="0,2,0,0" 
+                                Command="{Binding MoveDownCmd}">
+                            <Image Source="/Image/ArrowDown_32x32.png"></Image>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                <GridSplitter Grid.Row="1" 
+                              Height="5" 
+                              Width="Auto"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Center"
+                              ResizeBehavior="PreviousAndNext"
+                              ResizeDirection="Rows"></GridSplitter>
+                <GroupBox Grid.Row="2" 
+                          Margin="5,5,5,5"  
+                          BorderBrush="Blue" 
+                          BorderThickness="1">
+                    <GroupBox.Header>
+                        <TextBlock Text="Destination folder and filename settings"
+                                   TextWrapping="NoWrap"
+                                   Style="{DynamicResource GroupboxHeaderStyle}" />
+                    </GroupBox.Header>
+                    <GroupBox.Content>
+                        <StackPanel Margin="5">
+                            <StackPanel HorizontalAlignment="Left" 
+                                        VerticalAlignment="Center" 
+                                        Orientation="Horizontal">
+                                <Label VerticalAlignment="Center" 
+                                       Content="_Export file name" 
+                                       Target="{Binding ElementName=txtBaseFileName}"></Label>
+                                <TextBox ToolTip="Resulting PDF file will be created with this name." 
+                                         Name="txtBaseFileName" 
+                                         VerticalAlignment="Center" 
+                                         VerticalContentAlignment="Center"
+                                         Height="22"
+                                         Margin="10,0,0,0" 
+                                         Width="200">
+                                    <TextBox.Text>
+                                        <Binding Path="BaseFileName" 
+                                                 Mode="TwoWay" 
+                                                 UpdateSourceTrigger="PropertyChanged" 
+                                                 ValidatesOnNotifyDataErrors="True"></Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+                            <Label VerticalAlignment="Center" Content="Select destination folder:"></Label>
+                            <StackPanel Margin="5,0,0,0" 
+                                        HorizontalAlignment="Left" 
+                                        VerticalAlignment="Center" 
+                                        Orientation="Horizontal">
+                                <TextBox ToolTip="Directory used to save the resulting PDF file." 
+                                         VerticalAlignment="Center" 
+                                         Width="250"
+                                         Height="22"
+                                         Text="{Binding DestinationFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"></TextBox>
+                                <Button ToolTip="Select directory where the resulting PDF file will be saved." 
+                                        VerticalAlignment="Center" 
+                                        Margin="10,0,0,0"
+                                        Command="{Binding SelectFolderCmd}">
+                                    <StackPanel HorizontalAlignment="Center" 
+                                                VerticalAlignment="Center" 
+                                                Orientation="Horizontal">
+                                        <Image Width="16" 
+                                               Height="16" 
+                                               Source="/Image/open_16x16.png"/>
+                                        <AccessText Margin="5,0,0,0" 
+                                                    VerticalAlignment="Center" 
+                                                    TextWrapping="NoWrap" 
+                                                    Text="_Browse..."></AccessText>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <CheckBox ToolTip="Overwrite resulting PDF file if it exists in location." 
+                                      IsChecked="{Binding OverwriteFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      Margin="5,5,0,0" 
+                                      Content="_Overwrite file(s) if exists"></CheckBox>
+                        </StackPanel>
+                    </GroupBox.Content>
+                </GroupBox>
+            </Grid>
+        </Border>
+        <StackPanel Grid.Row="3" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Center">
+            <Button ToolTip="Start PDF merge process."
+                    VerticalAlignment="Center" 
+                    Command="{Binding MergeCmd}" 
+                    Margin="0,0,2,0"
+                    IsDefault="True">
+                <StackPanel HorizontalAlignment="Center" 
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                    <Image  Width="16" 
+                            Height="16"
+                            Source="/Image/Tick_16x16.png"/>
+                    <TextBlock Margin="5,0,0,0"
+                               VerticalAlignment="Center"
+                               TextWrapping="NoWrap"
+                               Text="Merge"></TextBlock>
+                </StackPanel>
+            </Button>
+            <Button ToolTip="Cancel PDF merge process."
+                    Margin="2,0,5,0"
+                    VerticalAlignment="Center"
+                    Command="{Binding CancelMergeCmd}"
+                    IsCancel="True">
+                <StackPanel HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Orientation="Horizontal">
+                    <Image Width="16" 
+                           Height="16"
+                           Source="/Image/Cancel_16x16.png"/>
+                    <TextBlock Margin="5,0,0,0"
+                               VerticalAlignment="Center"
+                               TextWrapping="NoWrap"
+                               Text="Cancel"></TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>
