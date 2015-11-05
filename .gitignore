@@ -19,6 +19,9 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+# Visual Studo 2015 cache/options directory
+.vs/
+
 # Roslyn cache directories
 *.ide/
 
@@ -116,12 +119,10 @@ DocProject/Help/*.HxT
 DocProject/Help/*.HxC
 DocProject/Help/*.hhc
 DocProject/Help/*.hhk
-# DocProject/Help/*.hhp
-# DocProject/Help/Html2
 DocProject/Help/html
 
 # Click-Once directory
-publish/
+#publish/
 
 # Publish Web Output
 *.[Pp]ublish.xml
