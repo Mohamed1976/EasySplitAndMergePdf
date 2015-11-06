@@ -26,9 +26,17 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>https://raw.githubusercontent.com/Mohamed1976/EasySplitAndMergePdf/master/EasySplitAndMergePdf/publish/</InstallUrl>
+    <SupportUrl>http://www.codeproject.com/Articles/1040410/PDF-Split-and-Merge-Tool-using-itextsharp</SupportUrl>
+    <TargetCulture>en-US</TargetCulture>
+    <ProductName>Easy Split &amp; Merge PDF</ProductName>
+    <PublisherName>Moccasoft</PublisherName>
+    <SuiteName>Easy Split &amp; Merge PDF</SuiteName>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
