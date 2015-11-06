@@ -3,6 +3,7 @@ using System.Windows;
 using System.Reflection;
 using EasySplitAndMergePdf.Base;
 using EasySplitAndMergePdf.Interface;
+using EasySplitAndMergePdf.Command;
 
 namespace EasySplitAndMergePdf.ViewModel
 {
@@ -14,6 +15,27 @@ namespace EasySplitAndMergePdf.ViewModel
         {
             Header = header;
             InitializeProperties();
+            InitializeCommands();
+        }
+
+        #endregion
+
+        #region [ Commands]
+
+        public RelayCommand<object> RequestNavigateCmd { get; private set; }
+
+        private void InitializeCommands()
+        {
+            RequestNavigateCmd = new RelayCommand<object>(OnRequestNavigateCmdExecute);
+        }
+
+        private void OnRequestNavigateCmdExecute(object parameter)
+        {
+            Uri uri = (Uri)parameter;
+            if(uri != null)
+            {
+                System.Diagnostics.Process.Start(uri.ToString());
+            }
         }
 
         #endregion
