@@ -1,4 +1,5 @@
 *.manifest binary
 *.application binary
 *.deploy binary
+*.cer binary
 *.htm html
