@@ -59,10 +59,10 @@
     <ApplicationIcon>Pdf_50x50.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>EA40E1928756EAF1F079FA424E88444FDD6A965E</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>9F16D5F3B95B0A015559A28C7CDA3D723B48BCAF</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>EasySplitAndMergePdf_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>ApplicationSigning.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -202,6 +202,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ApplicationSigning.pfx" />
     <None Include="EasySplitAndMergePdf_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
